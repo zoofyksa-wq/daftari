@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // كل مستخدم يقرأ ويكتب ملاحظاته فقط
+    match /users/{uid}/notes/{noteId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.title is string && request.resource.data.title.size() <= 300
+        && request.resource.data.body is string && request.resource.data.body.size() <= 200000;
+    }
+  }
+}

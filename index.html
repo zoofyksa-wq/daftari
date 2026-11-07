@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دفتري</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700&family=Readex+Pro:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Setup notice (shown only if firebase-config.js still has placeholders) -->
+<div class="auth" id="setupView" hidden>
+  <div class="auth-card">
+    <div class="auth-head"><h1>دفتري</h1><p>الموقع يحتاج إعدادات Firebase.</p></div>
+    <div class="form-msg error">افتح الملف firebase-config.js والصق فيه قيم مشروعك من Firebase، ثم ارفع الموقع من جديد.</div>
+  </div>
+</div>
+
+<!-- Sign in / sign up -->
+<div class="auth" id="authView" hidden>
+  <div class="auth-card">
+    <div class="auth-head">
+      <h1>دفتري</h1>
+      <p>ملاحظاتك محفوظة في حسابك، وتفتحها من أي جهاز.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" id="tabLogin" role="tab" type="button" aria-selected="true">تسجيل الدخول</button>
+      <button class="tab" id="tabSignup" role="tab" type="button" aria-selected="false">إنشاء حساب</button>
+    </div>
+    <form id="authForm" novalidate>
+      <div class="field">
+        <label for="email">البريد الإلكتروني</label>
+        <input id="email" type="email" autocomplete="email" dir="ltr" required placeholder="name@example.com">
+      </div>
+      <div class="field">
+        <label for="password">كلمة المرور</label>
+        <input id="password" type="password" autocomplete="current-password" dir="ltr" required minlength="6">
+        <span class="hint" id="pwHint" hidden>٦ أحرف على الأقل.</span>
+      </div>
+      <div class="field" id="confirmField" hidden>
+        <label for="password2">تأكيد كلمة المرور</label>
+        <input id="password2" type="password" autocomplete="new-password" dir="ltr">
+      </div>
+      <div class="form-msg" id="authMsg" hidden></div>
+      <button class="btn btn-primary" id="authSubmit" type="submit">دخول</button>
+      <button class="link-btn" id="forgotBtn" type="button">نسيت كلمة المرور؟</button>
+    </form>
+  </div>
+</div>
+
+<!-- Notebook -->
+<div class="app" id="app" hidden>
+  <header class="top">
+    <div class="brand">
+      <h1>دفتري</h1>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="user-box">
+      <span class="user-email" id="userEmail"></span>
+      <button class="btn" id="logoutBtn" type="button">تسجيل الخروج</button>
+    </div>
+    <button class="btn btn-primary" id="newBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      ملاحظة جديدة
+    </button>
+  </header>
+
+  <div class="panes">
+    <aside class="list-pane" aria-label="الملاحظات">
+      <input class="search" id="search" type="search" placeholder="ابحث في ملاحظاتك" aria-label="ابحث في ملاحظاتك">
+      <div class="banner" id="banner" hidden></div>
+      <ul class="notes" id="list"></ul>
+    </aside>
+
+    <section class="sheet" aria-label="المحرر">
+      <div class="toolbar" id="toolbar" hidden>
+        <button class="icon-btn back" id="backBtn" type="button" aria-label="رجوع إلى القائمة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          الملاحظات
+        </button>
+        <span class="status" id="status" data-s="saved"><span class="dot"></span><span id="statusText">محفوظ</span></span>
+        <button class="icon-btn" id="pinBtn" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>
+          <span id="pinText">تثبيت</span>
+        </button>
+        <button class="icon-btn danger" id="delBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+          <span id="delText">حذف</span>
+        </button>
+      </div>
+
+      <div class="write" id="editor" hidden>
+        <input class="title-input" id="titleInput" type="text" placeholder="العنوان" aria-label="عنوان الملاحظة" autocomplete="off">
+        <div class="meta"><span id="metaDate"></span><span id="metaWords"></span></div>
+        <textarea class="body-input" id="bodyInput" placeholder="اكتب هنا…" aria-label="نص الملاحظة"></textarea>
+      </div>
+
+      <div class="empty" id="empty">
+        <div class="empty-inner">
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="10" y="6" width="28" height="36" rx="3" fill="var(--accent-soft)"/><path d="M16 16h16M16 23h16M16 30h10"/></svg>
+          <h2 id="emptyTitle">جارٍ فتح دفترك…</h2>
+          <p id="emptyText">لحظة واحدة.</p>
+          <button class="btn btn-primary" id="emptyNew" type="button" hidden>اكتب أول ملاحظة</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
