@@ -100,7 +100,20 @@ $('forgotBtn').addEventListener('click', async () => {
   }
 });
 
-$('logoutBtn').addEventListener('click', () => signOut(auth));
+/* ---------- account menu ---------- */
+const menuBtn = $('menuBtn'), menuEl = $('userMenu');
+function setMenu(open) {
+  menuEl.hidden = !open;
+  menuBtn.setAttribute('aria-expanded', String(open));
+  if (open) $('logoutBtn').focus();
+}
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(menuEl.hidden); });
+document.addEventListener('click', (e) => { if (!menuEl.hidden && !menuEl.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !menuEl.hidden) { setMenu(false); menuBtn.focus(); }
+});
+
+$('logoutBtn').addEventListener('click', () => { setMenu(false); signOut(auth); });
 
 /* =========================================================
    Notebook

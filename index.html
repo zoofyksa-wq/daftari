@@ -63,14 +63,25 @@
       <h1>دفتري</h1>
       <span class="count" id="count"></span>
     </div>
-    <div class="user-box">
-      <span class="user-email" id="userEmail"></span>
-      <button class="btn" id="logoutBtn" type="button">تسجيل الخروج</button>
-    </div>
     <button class="btn btn-primary" id="newBtn" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       ملاحظة جديدة
     </button>
+    <div class="menu-wrap">
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="القائمة" aria-haspopup="menu" aria-expanded="false" aria-controls="userMenu">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </button>
+      <div class="menu" id="userMenu" role="menu" hidden>
+        <div class="menu-head">
+          <span class="menu-label">مسجّل الدخول باسم</span>
+          <span class="user-email" id="userEmail"></span>
+        </div>
+        <button class="menu-item danger" id="logoutBtn" type="button" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>
+          تسجيل الخروج
+        </button>
+      </div>
+    </div>
   </header>
 
   <div class="panes">
