@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   sendPasswordResetEmail, sendEmailVerification, signOut,
+  GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
   getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot,
@@ -38,7 +39,9 @@ const AUTH_ERRORS = {
   'auth/user-not-found': 'لا يوجد حساب بهذا البريد. أنشئ حسابًا جديدًا.',
   'auth/too-many-requests': 'محاولات كثيرة. انتظر قليلًا ثم حاول مجددًا.',
   'auth/network-request-failed': 'لا يوجد اتصال بالإنترنت. تحقق من الشبكة وحاول مجددًا.',
-  'auth/operation-not-allowed': 'التسجيل بالبريد غير مفعّل في إعدادات Firebase.',
+  'auth/operation-not-allowed': 'طريقة الدخول هذه غير مفعّلة في إعدادات Firebase.',
+  'auth/unauthorized-domain': 'هذا الموقع غير مضاف في Firebase. أضفه من Authentication ← Settings ← Authorized domains.',
+  'auth/account-exists-with-different-credential': 'هذا البريد مسجّل بطريقة دخول أخرى. سجّل الدخول بالبريد وكلمة المرور.',
 };
 const authError = (e) => AUTH_ERRORS[e?.code] || 'حدث خطأ غير متوقع. حاول مجددًا.';
 
@@ -88,6 +91,30 @@ $('authForm').addEventListener('submit', async (e) => {
     btn.disabled = false;
   }
 });
+
+/* ---------- Google sign-in ---------- */
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+$('googleBtn').addEventListener('click', async () => {
+  const btn = $('googleBtn');
+  btn.disabled = true;
+  showAuthMsg('');
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (err) {
+    const code = err?.code;
+    if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+      try { await signInWithRedirect(auth, googleProvider); return; }
+      catch (e2) { showAuthMsg(authError(e2)); }
+    } else if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+      showAuthMsg(authError(err));
+    }
+  } finally {
+    btn.disabled = false;
+  }
+});
+getRedirectResult(auth).catch((err) => showAuthMsg(authError(err)));
 
 $('forgotBtn').addEventListener('click', async () => {
   const email = $('email').value.trim();

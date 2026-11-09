@@ -224,3 +224,10 @@ button { cursor: pointer; }
 .menu-item:hover, .menu-item:focus-visible { background: var(--paper); }
 .menu-item.danger { color: var(--danger); }
 .menu-item.danger:hover, .menu-item.danger:focus-visible { background: var(--danger-soft); }
+
+/* ---------- Google sign-in ---------- */
+.google-btn { justify-content: center; width: 100%; padding: 11px 14px; font-weight: 500; }
+.google-btn svg { width: 20px; height: 20px; }
+.google-btn[disabled] { opacity: .6; cursor: progress; }
+.divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.8125rem; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
